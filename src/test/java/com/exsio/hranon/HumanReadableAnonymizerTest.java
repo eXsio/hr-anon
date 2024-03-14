@@ -3,6 +3,9 @@ package com.exsio.hranon;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public class HumanReadableAnonymizerTest {
 
 
@@ -19,6 +22,34 @@ public class HumanReadableAnonymizerTest {
                 "</div><div style=\"color:rgba(0,0,0,0.87);font-size:14px;\"><br /></div><br /><br />"
         );
     }
+
+    @Test
+    public void testNumberAnonymization() {
+        testNumberAnonymization(222, false);
+        testNumberAnonymization(222L, false);
+        testNumberAnonymization(222f, true);
+        testNumberAnonymization(222.3, true);
+        testNumberAnonymization(222.3d, true);
+        testNumberAnonymization(222.345, true);
+        testNumberAnonymization(new BigDecimal("222.345"), true);
+        testNumberAnonymization(new BigInteger("222"), false);
+    }
+
+    public <T extends Number> void testNumberAnonymization(T source, boolean isFloatingPoint) {
+        var result =  HumanReadableAnonymizer.anonymize(source);
+        System.out.println(source);
+        System.out.println(result);
+        System.out.println();
+        Assertions.assertNotEquals(source, result);
+        Assertions.assertEquals(source.toString().length(), result.toString().length());
+        Assertions.assertEquals(source.getClass(), result.getClass());
+        if(isFloatingPoint) {
+            Assertions.assertTrue(result.toString().contains("."));
+        } else {
+            Assertions.assertFalse(result.toString().contains("."));
+        }
+    }
+
 
     private void testStringAnonymize(String source, String start, String end) {
         var result = HumanReadableAnonymizer.anonymize(source);

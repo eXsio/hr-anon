@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
-class HrStringAnon {
+class HrStringAnonymizer {
 
     private static final String SEED_SOURCE = "str_seed_src.txt";
 
@@ -58,11 +58,7 @@ class HrStringAnon {
         }
         try {
             Integer.parseInt(token);
-            var replacement = new StringBuilder();
-            for (int i = 0; i < token.length(); i++) {
-                replacement.append(ThreadLocalRandom.current().nextInt(9));
-            }
-            return replacement.toString();
+            return HrNumberAnonymizer.anonymizeNumber(token);
         } catch (NumberFormatException e) {
             if (!SEED.containsKey(token.length())) {
                 return combineReplacement(token);
@@ -97,8 +93,8 @@ class HrStringAnon {
     }
 
     private static String readSeedFile() throws URISyntaxException, IOException {
-        var resource = HrStringAnon.class.getClassLoader().getResource(SEED_SOURCE);
-        if(resource == null) {
+        var resource = HrStringAnonymizer.class.getClassLoader().getResource(SEED_SOURCE);
+        if (resource == null) {
             throw new RuntimeException("Unable to find String Seed Source File");
         }
         var reader = new BufferedReader(new FileReader(new File(resource.toURI())));
