@@ -7,7 +7,7 @@ public class HumanReadableAnonymizerTest {
 
 
     @Test
-    public void str() {
+    public void testStringAnonymization() {
         testStringAnonymize(
                 "<p class=\"test\">Test string to anonymize with a very long word \"Pneumonoultramicroscopicsilicovolcanoconiosis\", a phone number +48 555-555-555 and an email some@email.com.</p><a href=\"abc\"",
                 "<p class=\"test\">",
