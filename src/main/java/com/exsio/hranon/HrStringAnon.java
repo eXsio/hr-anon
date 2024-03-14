@@ -30,7 +30,7 @@ class HrStringAnon {
             return null;
         }
         var tokens = Jsoup.parse(source).text().split("[^a-zA-Z0-9']+");
-        for (String token : tokens) {
+        for (var token : tokens) {
             var replacement = copyCase(token, findReplacement(token));
             source = source.replaceFirst("\\b" + Pattern.quote(token) + "\\b", replacement);
         }
@@ -58,7 +58,7 @@ class HrStringAnon {
         }
         try {
             Integer.parseInt(token);
-            StringBuilder replacement = new StringBuilder();
+            var replacement = new StringBuilder();
             for (int i = 0; i < token.length(); i++) {
                 replacement.append(ThreadLocalRandom.current().nextInt(9));
             }
@@ -87,7 +87,7 @@ class HrStringAnon {
         }
         var seed = readSeedFile();
         var map = new HashMap<Integer, Set<String>>();
-        for (String word : seed.split("\\s+")) {
+        for (var word : seed.split("\\s+")) {
             if (!map.containsKey(word.length())) {
                 map.put(word.length(), new LinkedHashSet<>());
             }
@@ -98,6 +98,9 @@ class HrStringAnon {
 
     private static String readSeedFile() throws URISyntaxException, IOException {
         var resource = HrStringAnon.class.getClassLoader().getResource(SEED_SOURCE);
+        if(resource == null) {
+            throw new RuntimeException("Unable to find String Seed Source File");
+        }
         var reader = new BufferedReader(new FileReader(new File(resource.toURI())));
         var stringBuilder = new StringBuilder();
         String line;
