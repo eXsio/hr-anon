@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-public class HrNumberAnonymizer {
+import static com.exsio.hranon.HrAnonUtil.randomInt;
+
+class HrNumberAnonymizer {
 
     private interface Anonymizer<T extends Number> extends Function<T, T> {
     }
@@ -30,7 +31,7 @@ public class HrNumberAnonymizer {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Number> T anonymize(T source) {
+    static <T extends Number> T anonymize(T source) {
         if (!ANONYMIZERS.containsKey(source.getClass())) {
             throw new RuntimeException("Unsupported Number Class: " + source.getClass());
         }
@@ -45,17 +46,17 @@ public class HrNumberAnonymizer {
                 replacement.append('.');
             } else {
                 if (i == 0 || i == source.length() - 1) {
-                    int random = ThreadLocalRandom.current().nextInt(8) + 1;
+                    int random = randomInt(8) + 1;
                     replacement.append(random);
                 } else {
-                    int random = ThreadLocalRandom.current().nextInt(9);
+                    int random = randomInt(9);
                     replacement.append(random);
                 }
 
             }
         }
         var result = replacement.toString();
-        if(result.equals(source)) {
+        if (result.equals(source)) {
             return anonymizeNumber(source);
         }
         return result;

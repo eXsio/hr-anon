@@ -8,8 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
+
+import static com.exsio.hranon.HrAnonUtil.randomInt;
 
 class HrStringAnonymizer {
 
@@ -25,7 +26,7 @@ class HrStringAnonymizer {
         }
     }
 
-    public static String anonymize(String source) {
+    static String anonymize(String source) {
         if (source == null) {
             return null;
         }
@@ -64,15 +65,14 @@ class HrStringAnonymizer {
                 return combineReplacement(token);
             }
             var set = SEED.get(token.length());
-            int randomIndex = ThreadLocalRandom.current().nextInt(set.size());
-            return SEED.get(token.length()).get(randomIndex);
+            return SEED.get(token.length()).get(randomInt(set.size()));
         }
     }
 
     private static String combineReplacement(String token) {
         var maxLength = Collections.max(SEED.keySet());
         var rest = token.substring(maxLength - 1, token.length() - 1);
-        var randomIndex = ThreadLocalRandom.current().nextInt(SEED.get(maxLength).size());
+        var randomIndex = randomInt(SEED.get(maxLength).size());
         return SEED.get(maxLength).get(randomIndex) + findReplacement(rest);
 
     }
