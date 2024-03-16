@@ -35,16 +35,16 @@ public class HumanReadableAnonymizerTest {
                 "<p \n" +
                         "class=\"test\">\n" +
                         "\t<a \n" +
-                        "\t\thref=\"test.com\">\n" +
-                        "\t\t\tp class test a href\n" +
+                        "\t\thref=\n" +
+                        "\t\t\t\"test.com\">p class test a href\n" +
                         "\t</a>\n" +
                         "</p>",
                 true,
                 "<p \n" +
                         "class=\"test\">\n" +
                         "\t<a \n" +
-                        "\t\thref=\"test.com\">\n" +
-                        "\t\t\t",
+                        "\t\thref=\n" +
+                        "\t\t\t\"test.com\">",
                 "\n" +
                         "\t</a>\n" +
                         "</p>"
