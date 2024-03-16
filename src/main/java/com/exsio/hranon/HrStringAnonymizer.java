@@ -2,10 +2,7 @@ package com.exsio.hranon;
 
 import org.jsoup.Jsoup;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -93,11 +90,11 @@ class HrStringAnonymizer {
     }
 
     private static String readSeedFile() throws URISyntaxException, IOException {
-        var resource = HrStringAnonymizer.class.getClassLoader().getResource(SEED_SOURCE);
+        var resource = HrStringAnonymizer.class.getClassLoader().getResourceAsStream(SEED_SOURCE);
         if (resource == null) {
             throw new RuntimeException("Unable to find String Seed Source File");
         }
-        var reader = new BufferedReader(new FileReader(new File(resource.toURI())));
+        var reader = new BufferedReader(new InputStreamReader(resource));
         var stringBuilder = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
