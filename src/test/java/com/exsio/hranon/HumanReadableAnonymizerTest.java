@@ -32,6 +32,25 @@ public class HumanReadableAnonymizerTest {
         );
 
         testStringAnonymize(
+                "<p \n" +
+                        "class=\"test\">\n" +
+                        "\t<a \n" +
+                        "\t\thref=\"test.com\">\n" +
+                        "\t\t\tp class test a href\n" +
+                        "\t</a>\n" +
+                        "</p>",
+                true,
+                "<p \n" +
+                        "class=\"test\">\n" +
+                        "\t<a \n" +
+                        "\t\thref=\"test.com\">\n" +
+                        "\t\t\t",
+                "\n" +
+                        "\t</a>\n" +
+                        "</p>"
+        );
+
+        testStringAnonymize(
                 "<p class=\"test\"><a href=\"test.com\">p class test a href</a></p>",
                 false,
                 "<p class=\"test\"><a href=\"test.com\">",
