@@ -2,9 +2,12 @@ package com.exsio.hranon;
 
 import org.jsoup.Jsoup;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.exsio.hranon.HrAnonUtil.randomInt;
@@ -12,6 +15,8 @@ import static com.exsio.hranon.HrAnonUtil.randomInt;
 class HrStringAnonymizer {
 
     private static final String SEED_SOURCE = "str_seed_src.txt";
+
+    private static final char MASK_CHAR = '�';
 
     private static final Map<Integer, List<String>> SEED = new HashMap<>();
 
@@ -23,16 +28,44 @@ class HrStringAnonymizer {
         }
     }
 
-    static String anonymize(String source) {
+    static String anonymize(String source, boolean isHtmlOrXml) {
         if (source == null) {
             return null;
         }
-        var tokens = Jsoup.parse(source).text().split("[^a-zA-Z0-9']+");
+        var masked = isHtmlOrXml ? getMasked(source) : source;
+        var text = isHtmlOrXml ? Jsoup.parse(source).text() : source;
+        var tokens = text.split("[^a-zA-Z0-9']+");
         for (var token : tokens) {
             var replacement = copyCase(token, findReplacement(token));
-            source = source.replaceFirst("\\b" + Pattern.quote(token) + "\\b", replacement);
+            masked = masked.replaceFirst("\\b" + Pattern.quote(token) + "\\b", replacement);
         }
-        return source;
+        return isHtmlOrXml ? buildResultFromMask(source, masked) : masked;
+    }
+
+    private static String buildResultFromMask(String source, String masked) {
+        var result = new StringBuilder();
+        for (int i = 0; i < masked.length(); i++) {
+            if (masked.charAt(i) == MASK_CHAR) {
+                result.append(source.charAt(i));
+            } else {
+                result.append(masked.charAt(i));
+            }
+        }
+
+        return result.toString();
+    }
+
+    private static String getMasked(String source) {
+        Pattern pattern = Pattern.compile("<[^>]+>");
+
+        // Create a matcher with the input HTML string
+        Matcher matcher = pattern.matcher(source);
+        var masked = source;
+        while (matcher.find()) {
+            var tag = matcher.group();
+            masked = masked.replace(tag, generateMask(tag.length()));
+        }
+        return masked;
     }
 
     private static String copyCase(String token, String replacement) {
@@ -107,5 +140,12 @@ class HrStringAnonymizer {
         return stringBuilder.toString().toLowerCase();
     }
 
+    public static String generateMask(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(MASK_CHAR);
+        }
+        return sb.toString();
+    }
 
 }

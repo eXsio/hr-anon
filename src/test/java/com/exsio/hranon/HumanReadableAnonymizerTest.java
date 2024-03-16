@@ -13,13 +13,29 @@ public class HumanReadableAnonymizerTest {
     public void testStringAnonymization() {
         testStringAnonymize(
                 "<p class=\"test\">Test string to anonymize with a very long word \"Pneumonoultramicroscopicsilicovolcanoconiosis\", a phone number +48 555-555-555 and an email some@email.com.</p><a href=\"abc\"",
+                true,
                 "<p class=\"test\">",
                 "</p><a href=\"abc\""
         );
         testStringAnonymize(
                 "<span style=\"color:rgba(0,0,0,0.87);font-size:14px;\">OCE/DN/6133 - Ocean a  <br /></span><div style=\"color:rgba(0,0,0,0.87);font-size:14px;\"><br /></div><div style=\"color:rgba(0,0,0,0.87);font-size:14px;\">Install of split system and Supply/install if drip tray</div><div style=\"color:rgba(0,0,0,0.87);font-size:14px;\"><br /></div><br /><br />",
+                true,
                 "<span style=\"color:rgba(0,0,0,0.87);font-size:14px;\">",
                 "</div><div style=\"color:rgba(0,0,0,0.87);font-size:14px;\"><br /></div><br /><br />"
+        );
+
+        testStringAnonymize(
+                "<p class=\"test\"><a href=\"test.com\">p class test a href</a></p>",
+                true,
+                "<p class=\"test\"><a href=\"test.com\">",
+                "</a></p>"
+        );
+
+        testStringAnonymize(
+                "<p class=\"test\"><a href=\"test.com\">p class test a href</a></p>",
+                false,
+                "<p class=\"test\"><a href=\"test.com\">",
+                "</a></p>"
         );
     }
 
@@ -51,13 +67,19 @@ public class HumanReadableAnonymizerTest {
     }
 
 
-    private void testStringAnonymize(String source, String start, String end) {
-        var result = HumanReadableAnonymizer.anonymize(source);
+    private void testStringAnonymize(String source, boolean isHtmlOrXml, String start, String end) {
+        var result = HumanReadableAnonymizer.anonymize(source, isHtmlOrXml);
         System.out.println(source);
         System.out.println(result);
         System.out.println();
         Assertions.assertNotEquals(result, source);
-        Assertions.assertTrue(result.startsWith(start));
-        Assertions.assertTrue(result.endsWith(end));
+        if(isHtmlOrXml) {
+            Assertions.assertTrue(result.startsWith(start));
+            Assertions.assertTrue(result.endsWith(end));
+        } else {
+            Assertions.assertFalse(result.startsWith(start));
+            Assertions.assertFalse(result.endsWith(end));
+        }
+
     }
 }
